@@ -1,0 +1,83 @@
+version: '3.8'
+
+networks:
+  my-network:
+    driver: bridge
+
+# Docker-Compose 单容器使用参考 YAML 配置文件
+# 更多配置参数请参考镜像 README.md 文档中说明
+services:
+  postgres-0:
+    image: 'colovu/postgres-repmgr:latest-alpine'
+    networks:
+      - my-network
+    ports:
+      - 5432:5432
+    environment:
+      - ENV_DEBUG=yes
+      - PG_PASSWORD=cvpass
+      - REPMGR_PASSWORD=reppas
+      - REPMGR_PRIMARY_HOST=postgres-0
+      - REPMGR_PARTNER_NODES=postgres-0,postgres-1,postgres-2,postgres-3
+      - REPMGR_NODE_NAME=postgres-0
+      - REPMGR_NODE_NETWORK_NAME=postgres-0
+
+  postgres-1:
+    image: 'colovu/postgres-repmgr:latest-alpine'
+    networks:
+      - my-network
+    ports:
+      - 5432
+    environment:
+      - ENV_DEBUG=yes
+      - PG_PASSWORD=cvpass
+      - REPMGR_PASSWORD=reppas
+      - REPMGR_PRIMARY_HOST=postgres-0
+      - REPMGR_PARTNER_NODES=postgres-0,postgres-1,postgres-2,postgres-3
+      - REPMGR_NODE_NAME=postgres-1
+      - REPMGR_NODE_NETWORK_NAME=postgres-1
+    depends_on:
+      - postgres-0
+
+  postgres-2:
+    image: 'colovu/postgres-repmgr:latest-alpine'
+    networks:
+      - my-network
+    ports:
+      - 5432
+    environment:
+      - ENV_DEBUG=yes
+      - PG_PASSWORD=cvpass
+      - REPMGR_PASSWORD=reppas
+      - REPMGR_PRIMARY_HOST=postgres-0
+      - REPMGR_PARTNER_NODES=postgres-0,postgres-1,postgres-2,postgres-3
+      - REPMGR_NODE_NAME=postgres-2
+      - REPMGR_NODE_NETWORK_NAME=postgres-2
+    depends_on:
+      - postgres-0
+
+  postgres-3:
+    image: 'colovu/postgres-repmgr:latest-alpine'
+    networks:
+      - my-network
+    ports:
+      - 5432
+    environment:
+      - ENV_DEBUG=yes
+      - PG_PASSWORD=cvpass
+      - REPMGR_PASSWORD=reppas
+      - REPMGR_PRIMARY_HOST=postgres-0
+      - REPMGR_PARTNER_NODES=postgres-0,postgres-1,postgres-2,postgres-3
+      - REPMGR_NODE_NAME=postgres-3
+      - REPMGR_NODE_NETWORK_NAME=postgres-3
+    depends_on:
+      - postgres-0
+
+# 定义本地数据卷，由系统管理，需要手动删除
+volumes:
+  app_conf:
+    driver: local
+  app_data:
+    driver: local
+  var_log:
+    driver: local
