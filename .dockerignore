@@ -1,0 +1,12 @@
+.git
+.gitignore
+
+./alpine
+./Makefile
+
+*.yml
+*.yaml
+
+./LICENSE
+./README.md
+./img
