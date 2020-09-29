@@ -582,6 +582,7 @@ postgresql_default_init() {
     if is_dir_empty "${PG_DATA_DIR}"; then
         LOG_I "Deploying ${APP_NAME} from scratch..."
         [ ! -e "${PG_HBA_FILE}" ] && postgresql_default_hba_config && postgresql_hba_allow_local_connection
+        [ ! -e "${PG_CONF_FILE}" ] && postgresql_default_postgresql_config
 
         if [[ "${PG_REPLICATION_MODE}" = "primary" ]]; then
             postgresql_primary_init_db
