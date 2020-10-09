@@ -17,7 +17,6 @@ build-arg:=--build-arg apt_source=tencent
 # 设置本地下载服务器路径，加速调试时的本地编译速度
 local_ip:=`echo "en0 eth0" |xargs -n1 ip addr show 2>/dev/null|grep inet|grep -v 127.0.0.1|grep -v inet6|tr "/" " "|awk '{print $$2}'`
 build-arg+=--build-arg local_url=http://$(local_ip)/dist-files
-#--build-arg local_url=http://192.168.1.187/dist-files/postgresql
 
 .PHONY: build build-debian build-alpine clean clearclean upgrade
 
@@ -61,3 +60,4 @@ push: tag
 upgrade: 
 	@echo "Upgrade all images..."
 	@docker images | grep 'colovu' | grep -v '<none>' | grep -v "latest-" | awk '{print $$1":"$$2}' | sort -u | xargs -L 1 docker pull
+

@@ -11,7 +11,7 @@ ARG apt_source=default
 ARG local_url=""
 
 ENV APP_NAME=postgresql \
-	APP_VERSION=12.4
+	APP_VERSION=10.14
 
 RUN select_source ${apt_source};
 RUN install_pkg bison flex libedit-dev libxml2-dev libxslt-dev zlib1g-dev libreadline-dev uuid-dev \
@@ -20,7 +20,7 @@ RUN install_pkg bison flex libedit-dev libxml2-dev libxslt-dev zlib1g-dev librea
 # 下载并解压软件包
 RUN set -eux; \
 	appName="${APP_NAME}-${APP_VERSION}.tar.bz2"; \
-	sha256="bee93fbe2c32f59419cb162bcc0145c58da9a8644ee154a30b9a5ce47de606cc"; \
+	sha256="381cd8f491d8f77db2f4326974542a50095b5fa7709f24d7c5b760be2518b23b"; \
 	[ ! -z ${local_url} ] && localURL=${local_url}/${APP_NAME}; \
 	appUrls="${localURL:-} \
 		https://ftp.postgresql.org/pub/source/v${APP_VERSION} \
@@ -79,7 +79,7 @@ RUN set -eux; \
 
 # repmgr 编译时需要保证在系统搜索路径中能找到 pg_config
 ENV PATH="/usr/local/${APP_NAME}/bin:${PATH}" \
-	LD_LIBRARY_PATH=/usr/local/${APP_NAME}/lib
+	LD_LIBRARY_PATH="/usr/local/${APP_NAME}/lib"
 
 ENV REPMGR_NAME=repmgr \
 	REPMGR_VERSION=5.1.0
@@ -125,7 +125,7 @@ ARG local_url=""
 ENV APP_NAME=postgresql \
 	APP_USER=postgres \
 	APP_EXEC=run.sh \
-	APP_VERSION=12.4
+	APP_VERSION=10.14
 
 ENV REPMGR_NAME=repmgr \
 	REPMGR_VERSION=5.1.0
@@ -134,7 +134,7 @@ ENV	APP_HOME_DIR=/usr/local/${APP_NAME} \
 	APP_DEF_DIR=/etc/${APP_NAME}
 
 ENV PATH="${APP_HOME_DIR}/bin:${PATH}" \
-	LD_LIBRARY_PATH=${APP_HOME_DIR}/lib
+	LD_LIBRARY_PATH="${APP_HOME_DIR}/lib"
 
 LABEL \
 	"Version"="v${APP_VERSION}" \
@@ -149,7 +149,6 @@ RUN select_source ${apt_source}
 
 # 从预处理过程中拷贝软件包(Optional)
 COPY --from=builder /usr/local/${APP_NAME}/ /usr/local/${APP_NAME}
-#COPY --from=builder /usr/local/${REPMGR_NAME}/ /usr/local/${REPMGR_NAME}
 
 # 安装依赖的软件包及库(Optional)
 RUN install_pkg `cat /usr/local/${APP_NAME}/runDeps`; 
@@ -170,6 +169,9 @@ VOLUME ["/srv/conf", "/srv/data", "/srv/datalog", "/srv/cert", "/var/log"]
 
 # 默认使用gosu切换为新建用户启动，必须保证端口在1024之上
 EXPOSE 5432
+
+# 应用健康状态检查
+HEALTHCHECK CMD PGPASSWORD="${PG_POSTGRES_PASSWORD}" psql -h 127.0.0.1 -d postgres -U postgres -At -c "select version();" || exit 1
 
 # 容器初始化命令，默认存放在：/usr/local/bin/entry.sh
 ENTRYPOINT ["entry.sh"]

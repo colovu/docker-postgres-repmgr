@@ -23,7 +23,7 @@ for env_var in "${app_env_file_lists[@]}"; do
         unset "${file_env_var}"
     fi
 done
-unset postgresql_env_vars
+unset app_env_file_lists
 
 # 应用路径参数
 export APP_HOME_DIR="/usr/local/${APP_NAME}"
@@ -103,6 +103,7 @@ export PG_USERNAME="${PG_USERNAME:-postgres}"
 export PG_PASSWORD="${PG_PASSWORD:-}"
 export PG_DATABASE="${PG_DATABASE:-postgres}"
 # 使用自定义用户名（非"postgres"）时的管理员密码
+[[ "${PG_USERNAME}" = "postgres" ]] && PG_POSTGRES_PASSWORD="${PG_PASSWORD}"
 export PG_POSTGRES_PASSWORD="${PG_POSTGRES_PASSWORD:-}"
 export PG_INITSCRIPTS_USERNAME="${PG_INITSCRIPTS_USERNAME:-${PG_USERNAME}}"
 export PG_INITSCRIPTS_PASSWORD="${PG_INITSCRIPTS_PASSWORD:-${PG_PASSWORD}}"
