@@ -83,7 +83,7 @@ RUN set -eux; \
 
 # repmgr 编译时需要保证在系统搜索路径中能找到 pg_config
 ENV PATH="/usr/local/${APP_NAME}/bin:${PATH}" \
-	LD_LIBRARY_PATH=/usr/local/${APP_NAME}/lib
+	"LD_LIBRARY_PATH=/usr/local/${APP_NAME}/lib"
 
 ENV REPMGR_NAME=repmgr \
 	REPMGR_VERSION=5.1.0
@@ -137,7 +137,7 @@ ENV	APP_HOME_DIR=/usr/local/${APP_NAME} \
 	APP_DEF_DIR=/etc/${APP_NAME}
 
 ENV PATH="${APP_HOME_DIR}/bin:${PATH}" \
-	LD_LIBRARY_PATH=${APP_HOME_DIR}/lib
+	LD_LIBRARY_PATH="${APP_HOME_DIR}/lib"
 
 LABEL \
 	"Version"="v${APP_VERSION}" \
@@ -152,7 +152,6 @@ RUN select_source ${apt_source}
 
 # 从预处理过程中拷贝软件包(Optional)
 COPY --from=builder /usr/local/${APP_NAME}/ /usr/local/${APP_NAME}
-#COPY --from=builder /usr/local/${REPMGR_NAME}/ /usr/local/${REPMGR_NAME}
 
 # 安装依赖的软件包及库(Optional)
 RUN install_pkg `cat /usr/local/${APP_NAME}/runDeps`; 
@@ -173,6 +172,9 @@ VOLUME ["/srv/conf", "/srv/data", "/srv/datalog", "/srv/cert", "/var/log"]
 
 # 默认使用gosu切换为新建用户启动，必须保证端口在1024之上
 EXPOSE 5432
+
+# 应用健康状态检查
+HEALTHCHECK CMD PGPASSWORD="${PG_POSTGRES_PASSWORD}" psql -h 127.0.0.1 -d postgres -U postgres -At -c "select version();" || exit 1
 
 # 容器初始化命令，默认存放在：/usr/local/bin/entry.sh
 ENTRYPOINT ["entry.sh"]

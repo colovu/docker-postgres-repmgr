@@ -48,7 +48,7 @@ postgresql_common_conf_set() {
     if grep -q "^#*\s*${key}" "$file" >/dev/null; then
         replace_in_file "$file" "^#*\s*${key}\s*=.*" "${key} = '${value}'" false
     else
-        echo "${property} = '${value}'" >>"$file"
+        echo "${key} = '${value}'" >>"$file"
     fi
 }
 
@@ -191,7 +191,7 @@ postgresql_execute() {
 postgresql_configure_from_environment_variables() {
     LOG_D "Modify postgresql.conf with PG_CFG_* values..."
     for var in "${!PG_CFG_@}"; do
-        key="$(echo "$var" | sed -e 's/^PG_CFG_//g' | tr '[:upper:]' '[:lower:]')"
+        key="$(echo "$var" | sed -e 's/^PG_CFG_//g' | sed -e 's/___/-/g' | sed -e 's/__/./g' | tr '[:upper:]' '[:lower:]')"
         value="${!var}"
         postgresql_conf_set "$key" "$value"
     done
@@ -202,8 +202,6 @@ postgresql_default_postgresql_config() {
     LOG_I "Modify postgresql.conf with default values..."
 
     [ ! -e "${PG_CONF_FILE}" ] && cp -rf "${APP_HOME_DIR}/share/postgresql.conf.sample" "${PG_CONF_FILE}"
-
-    postgresql_configure_from_environment_variables
     
     postgresql_conf_set "logging_collector" "on"
     postgresql_conf_set "wal_level" "hot_standby"
@@ -220,14 +218,10 @@ postgresql_default_postgresql_config() {
 
     [[ -n "${PG_SHARED_PRELOAD_LIBRARIES}" ]] && postgresql_conf_set "shared_preload_libraries" "${PG_SHARED_PRELOAD_LIBRARIES}"
 
-    # Update default value for 'include_dir' directive
-    # ref: https://github.com/postgres/postgres/commit/fb9c475597c245562a28d1e916b575ac4ec5c19f#diff-f5544d9b6d218cc9677524b454b41c60
-    if ! grep include_dir "${PG_CONF_FILE}" > /dev/null; then
-        postgresql_error "include_dir line is not present in ${PG_CONF_FILE}. This may be due to a changes in a new version of PostgreSQL. Please check"
-        exit 1
-    fi
     postgresql_conf_set "include_dir" "conf.d"
     mkdir -p "${APP_CONF_DIR}/conf.d"
+
+    postgresql_configure_from_environment_variables
 }
 
 # 生成初始 pg_hba.conf 配置
