@@ -8,7 +8,7 @@ networks:
 # 更多配置参数请参考镜像 README.md 文档中说明
 services:
   postgres-0:
-    image: 'colovu/postgres-repmgr:latest-alpine'
+    image: 'colovu/postgres-repmgr'
     networks:
       - my-network
     ports:
@@ -23,7 +23,7 @@ services:
       - REPMGR_NODE_NETWORK_NAME=postgres-0
 
   postgres-1:
-    image: 'colovu/postgres-repmgr:latest-alpine'
+    image: 'colovu/postgres-repmgr'
     networks:
       - my-network
     ports:
@@ -40,7 +40,7 @@ services:
       - postgres-0
 
   postgres-2:
-    image: 'colovu/postgres-repmgr:latest-alpine'
+    image: 'colovu/postgres-repmgr'
     networks:
       - my-network
     ports:
@@ -57,7 +57,7 @@ services:
       - postgres-0
 
   postgres-3:
-    image: 'colovu/postgres-repmgr:latest-alpine'
+    image: 'colovu/postgres-repmgr'
     networks:
       - my-network
     ports:

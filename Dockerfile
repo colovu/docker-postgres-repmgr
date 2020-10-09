@@ -79,7 +79,7 @@ RUN set -eux; \
 
 # repmgr 编译时需要保证在系统搜索路径中能找到 pg_config
 ENV PATH="/usr/local/${APP_NAME}/bin:${PATH}" \
-	"LD_LIBRARY_PATH=/usr/local/${APP_NAME}/lib"
+	LD_LIBRARY_PATH="/usr/local/${APP_NAME}/lib"
 
 ENV REPMGR_NAME=repmgr \
 	REPMGR_VERSION=5.1.0
