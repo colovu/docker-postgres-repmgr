@@ -174,7 +174,7 @@ VOLUME ["/srv/conf", "/srv/data", "/srv/datalog", "/srv/cert", "/var/log"]
 EXPOSE 5432
 
 # 应用健康状态检查
-HEALTHCHECK CMD PGPASSWORD="${PG_POSTGRES_PASSWORD}" psql -h 127.0.0.1 -d postgres -U postgres -At -c "select version();" || exit 1
+HEALTHCHECK CMD PGPASSWORD="${PG_POSTGRES_PASSWORD:-${PG_PASSWORD}}" psql -h 127.0.0.1 -d postgres -U postgres -At -c "select version();" || exit 1
 
 # 容器初始化命令，默认存放在：/usr/local/bin/entry.sh
 ENTRYPOINT ["entry.sh"]

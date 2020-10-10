@@ -9,7 +9,7 @@ app_name :=colovu/postgres-repmgr
 # 	<镜像名>:<分支名>-<年月日>-<时分秒>		# Git 仓库有文件修改后的编译
 # 	<镜像名>:latest-<年月日>-<时分秒>		# 非 Git 仓库编译
 current_subversion:=$(shell if [ ! `git status >/dev/null 2>&1` ]; then git rev-parse --short HEAD; else date +%y%m%d-%H%M%S; fi)
-current_tag:=$(shell if [ ! `git status >/dev/null 2>&1` ]; then git rev-parse --abbrev-ref HEAD | sed -e 's/master/latest/'; else echo "latest"; fi)-$(current_subversion)
+current_tag:=local-$(shell if [ ! `git status >/dev/null 2>&1` ]; then git rev-parse --abbrev-ref HEAD | sed -e 's/master/latest/'; else echo "latest"; fi)-$(current_subversion)
 
 # Sources List: default / tencent / ustc / aliyun / huawei
 build-arg:=--build-arg apt_source=tencent
@@ -26,14 +26,14 @@ build: build-alpine build-debian
 build-debian:
 	@echo "Build $(app_name):$(current_tag)"
 	@docker build --force-rm $(build-arg) -t $(app_name):$(current_tag) .
-	@echo "Add tag: $(app_name):latest"
-	@docker tag $(app_name):$(current_tag) $(app_name):latest
+	@echo "Add tag: $(app_name):local-latest"
+	@docker tag $(app_name):$(current_tag) $(app_name):local-latest
 
 build-alpine:
 	@echo "Build $(app_name):$(current_tag)-alpine"
 	@docker build --force-rm $(build-arg) -t $(app_name):$(current_tag)-alpine ./alpine
-	@echo "Add tag: $(app_name):latest-alpine"
-	@docker tag $(app_name):$(current_tag)-alpine $(app_name):latest-alpine
+	@echo "Add tag: $(app_name):local-latest-alpine"
+	@docker tag $(app_name):$(current_tag)-alpine $(app_name):local-latest-alpine
 
 # 清理悬空的镜像（无TAG）及停止的容器 
 clearclean: clean
