@@ -5,7 +5,7 @@ version: '3.8'
 services:
   # 服务名及节点名格式必须为：<name>-<id> 格式
   postgres-0:
-    image: 'colovu/postgres-repmgr'
+    image: 'colovu/postgres-repmgr:10'
     ports:
       - 5432:5432
     environment:
