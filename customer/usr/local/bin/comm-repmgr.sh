@@ -456,10 +456,15 @@ repmgr_default_init() {
         LOG_I "Deploying postgresql with persisted configuration"
     fi
 
-    # 生成 repmgr 默认配置文件
-    repmgr_generate_repmgr_config
-    # 更新数据库默认配置文件
-    repmgr_update_postgresql_configuration
+    if [[ ! -f "${REPMGR_CONF_DIR}/.app_init_flag" ]]; then
+        LOG_I "Deploying repmgr with new configuration"
+        # 生成 repmgr 默认配置文件
+        repmgr_generate_repmgr_config
+        # 更新数据库默认配置文件
+        repmgr_update_postgresql_configuration
+    else
+        LOG_I "Deploying repmgr with persisted configuration"
+    fi
 
     if [[ "${REPMGR_ROLE}" = "standby" ]]; then
         LOG_I "Run as standby, check and clone data from primary"
