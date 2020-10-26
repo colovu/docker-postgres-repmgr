@@ -462,6 +462,9 @@ repmgr_default_init() {
         repmgr_generate_repmgr_config
         # 更新数据库默认配置文件
         repmgr_update_postgresql_configuration
+
+        touch "${REPMGR_CONF_DIR}/.app_init_flag"
+        echo "$(date '+%Y-%m-%d %H:%M:%S') : Init success." >> "${REPMGR_CONF_DIR}/.app_init_flag"
     else
         LOG_I "Deploying repmgr with persisted configuration"
     fi
