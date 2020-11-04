@@ -469,7 +469,6 @@ repmgr_default_init() {
         LOG_I "Deploying repmgr with persisted configuration"
     fi
 
-
     if [[ "${REPMGR_ROLE}" = "standby" ]]; then
         LOG_I "Run as standby, check and clone data from primary"
         repmgr_wait_primary_node || exit 1
