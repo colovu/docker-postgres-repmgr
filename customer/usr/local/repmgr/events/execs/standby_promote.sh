@@ -1,4 +1,6 @@
 #!/bin/bash
+#
+# 主库失效时，将当前节点提升为主库
 
 # shellcheck disable=SC1091
 
