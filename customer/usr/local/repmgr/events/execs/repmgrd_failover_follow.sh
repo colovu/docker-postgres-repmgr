@@ -9,3 +9,4 @@ set -o pipefail
 
 . "${REPMGR_EVENTS_DIR}/execs/includes/anotate_event_processing.sh"
 . "${REPMGR_EVENTS_DIR}/execs/includes/lock_standby.sh"
+. "${REPMGR_EVENTS_DIR}/execs/includes/unlock_primary.sh"

@@ -5,5 +5,5 @@
 set -eu
 set -o pipefail
 
-LOG_I  "$header Locking primary..."
+LOG_D  "$header Locking primary..."
 echo "$(repmgr_get_node_id)" > "${REPMGR_PRIMARY_ROLE_LOCK_FILE}"

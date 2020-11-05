@@ -8,6 +8,6 @@ set -o pipefail
 readonly query="SELECT upstream_node_id FROM repmgr.nodes WHERE node_id=$(repmgr_get_node_id)"
 readonly new_upstream_node_id="$(echo "$query" | ENV_DEBUG=true postgresql_execute "${REPMGR_DATABASE}" "${PG_REPLICATION_USER}" "${PG_REPLICATION_PASSWORD}" "" "" "-tA")"
 if [[ -n "$new_upstream_node_id" ]]; then
-    LOG_I "$header Locking standby (node_id=$new_upstream_node_id)..."
+    LOG_D "$header Locking standby (node_id=$new_upstream_node_id)..."
     echo "$new_upstream_node_id" > "${REPMGR_STANDBY_ROLE_LOCK_FILE}"
 fi

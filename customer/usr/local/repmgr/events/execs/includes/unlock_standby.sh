@@ -5,5 +5,5 @@
 set -eu
 set -o pipefail
 
-LOG_I "$header Unlocking standby..."
+LOG_D "$header Unlocking standby..."
 rm -f "${REPMGR_STANDBY_ROLE_LOCK_FILE}"
