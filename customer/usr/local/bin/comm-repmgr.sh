@@ -290,17 +290,19 @@ repmgr_wait_primary_node() {
     for ((i = 0 ; i <= timeout ; i+=step )); do
         local query="SELECT 1 FROM information_schema.schemata WHERE catalog_name='${REPMGR_DATABASE}' AND schema_name='repmgr'"
         if ! schemata="$(echo "$query" | NO_ERRORS=true postgresql_execute "${REPMGR_DATABASE}" "${REPMGR_USERNAME}" "${REPMGR_PASSWORD}" "${REPMGR_CURRENT_PRIMARY_HOST}" "${REPMGR_CURRENT_PRIMARY_PORT}" "-tA")"; then
-            LOG_D "Host '${REPMGR_CURRENT_PRIMARY_HOST}:${REPMGR_CURRENT_PRIMARY_PORT}' is not accessible ($i)"
+            LOG_W "Host '${REPMGR_CURRENT_PRIMARY_HOST}:${REPMGR_CURRENT_PRIMARY_PORT}' is not accessible ($i)"
         else
             if [[ $schemata -ne 1 ]]; then
                 LOG_D "Schema ${REPMGR_DATABASE}.repmgr is still not accessible ($i)"
             else
-                LOG_D "Schema ${REPMGR_DATABASE}.repmgr exists!"
+                LOG_I "Schema ${REPMGR_DATABASE}.repmgr exists!"
                 return_value=0 && break
             fi
         fi
         sleep "$step"
     done
+    
+    LOG_W "Timeout while checking primary node '${REPMGR_CURRENT_PRIMARY_HOST}:${REPMGR_CURRENT_PRIMARY_PORT}'"
     return $return_value
 }
 
